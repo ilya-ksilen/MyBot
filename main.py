@@ -20,5 +20,6 @@ Pattern_key = {
 }
 
 def generate_bass (config):
-
-def generate_lead (config):
+#code
+def generate_lead (config): 
+#code
