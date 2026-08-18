@@ -105,3 +105,21 @@ loop = generate_random_loop(steps=16)
 for inst, pattern in loop.items():
     print(f"{inst}: {pattern}")
     
+
+#визуальная часть
+def visualize_loop (loop):
+    heaer = "      " + " ".join(f"{i:2d}" for i in range(16))
+    lines = [header]
+    for inst in PATTERN_INST.keys():
+        if inst in loop:
+            pattern = loop [inst]
+        else:
+            pattern = [0] * 16
+        row = f"{inst:6s}"
+        for val in pattern:
+            if val == 1:
+                row += "red"
+            else:
+                row += "black"
+            lines.append(row)
+    return "\n".join(lines)
