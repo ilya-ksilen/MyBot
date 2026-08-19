@@ -6,6 +6,7 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.types import CallbackQuery
 from dotenv import load_dotenv
 import os
+from main_drum import generate_random_loop, visualize_loop
 
 logging.basicConfig(level=logging.INFO)
 
