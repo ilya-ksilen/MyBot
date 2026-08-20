@@ -1,6 +1,6 @@
 import logging
 logging.basicConfig(
-    level = logging.INFO
+    level = logging.INFO, 
     format = '%(asictime)s - %(levelname)s - %(message)s'
 )
 import random
@@ -78,7 +78,7 @@ PATTERN_INST = {
 def select_instruments():
     all_instruments = list(PATTERN_INST.keys())
     others = [inst for inst in all_instruments if inst not in ["kick","snare"]]
-    count_ohers = random.randint(4,6)
+    count_others = random.randint(4,6)
     selected_others = random.sample(others,min(count_others,len(others))) #безопасность кода (чтобы не взял больше)
     return ["kick","snare"] + selected_others
 
@@ -92,23 +92,18 @@ def generate_loop (instruments, steps=16):
         for i in range(steps):
             full.append(mask[i%len(mask)])
             result[instrument]=full
-        return result
+     return result
 
 def generate_random_loop(steps=16):
-    instruments = selest_instruments()
+    instruments = select_instruments()
     loop = generate_loop(instruments,steps=16)
     return loop
 
-#проверка
-print("main func:")
-loop = generate_random_loop(steps=16)
-for inst, pattern in loop.items():
-    print(f"{inst}: {pattern}")
     
 
 #визуальная часть
 def visualize_loop (loop):
-    heaer = "      " + " ".join(f"{i:2d}" for i in range(16))
+    header = "      " + " ".join(f"{i:2d}" for i in range(16))
     lines = [header]
     for inst in PATTERN_INST.keys():
         if inst in loop:
@@ -118,8 +113,10 @@ def visualize_loop (loop):
         row = f"{inst:6s}"
         for val in pattern:
             if val == 1:
-                row += "red"
+                row += "🟥"
             else:
-                row += "black"
-            lines.append(row)
+                row += "⬛"
+        lines.append(row)
     return "\n".join(lines)
+
+
