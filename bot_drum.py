@@ -3,6 +3,7 @@ import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import CallbackQuery
 from dotenv import load_dotenv
 import os
@@ -31,10 +32,10 @@ async def process_generate(callback_query: CallbackQuery):
     loop = generate_random_loop(steps=16)
     viz = visualize_loop(loop)
 
-    await callback_query.message.answer("Сгенерированный паттерн:\n\n{viz}")
+    await callback_query.message.answer(f"Сгенерированный паттерн:\n\n{viz}")
 
-    #запуск бота
-    async def main():
+#запуск бота
+async def main():
         await dp.start_polling(bot)
-        if __name__ == "__name__":
+        if __name__ == "__main__":
             asyncio.run(main())
