@@ -1,13 +1,13 @@
 import logging
 logging.basicConfig(
     level = logging.INFO, 
-    format = '%(asictime)s - %(levelname)s - %(message)s'
+    format = '%(asctime)s - %(levelname)s - %(message)s'
 )
 import random
 
 #маски всех инструментов
 MASK = {
-"kick1":[1,0,0,0],
+    "kick1":[1,0,0,0],
     "snare1": [0,0,0,0,1,0,0,0],
     "snare2": [0,0,0,1,0,0,0,1],
     "snare3":[0,0,0,1,0,0,0,0],
@@ -92,7 +92,7 @@ def generate_loop (instruments, steps=16):
         for i in range(steps):
             full.append(mask[i%len(mask)])
             result[instrument]=full
-     return result
+    return result
 
 def generate_random_loop(steps=16):
     instruments = select_instruments()
@@ -118,5 +118,6 @@ def visualize_loop (loop):
                 row += "⬛"
         lines.append(row)
     return "\n".join(lines)
+
 
 

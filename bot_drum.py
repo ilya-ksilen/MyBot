@@ -1,3 +1,6 @@
+import sys
+print('DEBUG: bot_drum начал выполняться', file=sys.stderr)
+sys.stderr.flush()
 import logging
 import asyncio
 from aiogram import Bot, Dispatcher, types
@@ -9,7 +12,7 @@ from dotenv import load_dotenv
 import os
 from main_drum import generate_random_loop, visualize_loop
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s- %(levelname)s - %(message)s')
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
@@ -36,6 +39,11 @@ async def process_generate(callback_query: CallbackQuery):
 
 #запуск бота
 async def main():
+    try:
         await dp.start_polling(bot)
-        if __name__ == "__main__":
-            asyncio.run(main())
+    except Exception as e:
+        logging.exception("Ошибка при запуске бота")
+if __name__ == "__main__":
+    print ("Бот запускается")
+    asyncio.run(main())
+
