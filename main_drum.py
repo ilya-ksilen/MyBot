@@ -1,3 +1,4 @@
+from PIL import Image, ImageDraw, ImageFont
 import logging
 logging.basicConfig(
     level = logging.INFO, 
@@ -72,8 +73,8 @@ PATTERN_INST = {
     "bong":["bong1","bong2","bong3"],
     "tom":["tom1","tom2","tom3"],
     "bell":["bell1","bell2","bell3","bell4"],
-    #"indastrial":["industrial1"],
-    #"glitch":["glitch1"]
+    # "indastrial":["industrial1"],
+    # "glitch":["glitch1"]
 }
 def select_instruments():
     all_instruments = list(PATTERN_INST.keys())
@@ -118,6 +119,27 @@ def visualize_loop (loop):
                 row += "⬛"
         lines.append(row)
     return "\n".join(lines)
+
+#визуал pillow
+def visualize_loop_image(loop):
+    #кнопки
+    cell_size = 40
+    intervals = 8 #между кнопок интервал
+    left_margin = 120
+    top_margin = 40
+
+    steps = 16
+
+    all_instruments = list(PATTERN_INST.KEYS())
+
+    rows = len(all_instruments)
+
+    #размеры изображения
+    width = left_margin + steps*(cell_size + intervals) + intervals
+    height = top_margin + rows*(cell_size + intervals) + intervals
+
+    img = 
+
 
 
 
