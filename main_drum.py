@@ -138,8 +138,42 @@ def visualize_loop_image(loop):
     width = left_margin + steps*(cell_size + intervals) + intervals
     height = top_margin + rows*(cell_size + intervals) + intervals
 
-    img = 
+    img = Image.new("RGB", (width, height), color="#2a2a2a")
+    draw = ImageDraw.Draw(img)
 
+    draw.text((10, 10), "DRUM PATTERN", fill="white")
+
+    y=top_margin
+
+    for instrument in all_instruments:
+        draw.text((10, y+5), instrument, fill="white")  #название инструмента (слева)
+
+        #получение паттерна для этого инструмента
+        if instrument in loop:
+            pattern = loop[instrument]
+        else:
+            pattern = [0]*16
+
+        #рисуем кнопки для каждого шага
+        for step in range(steps):
+            x = left_margin + step * (cell_size + intervals)
+
+           #определение цвета кнопки (горит - не горит)
+            if pattern[step] == 1:
+                color = "#ff8800" #оранжевый
+            else:
+                color = "#444444" #темно-серый
+
+            #рисуем форму кнопки
+            draw.rectangle(
+                [x, y, x + cell_size, y + cell_size],
+                fill = color,
+                outline = "#666666"
+                width = 2
+            )
+        #следующая строка (инструмент)
+        y += cell_size + intervals
+    return img
 
 
 
