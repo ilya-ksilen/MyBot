@@ -1,4 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
 import logging
 logging.basicConfig(
     level = logging.INFO, 
@@ -174,6 +175,8 @@ def visualize_loop_image(loop):
         #следующая строка (инструмент)
         y += cell_size + intervals
     return img
-
-
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+    return buffer
 
