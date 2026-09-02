@@ -131,7 +131,7 @@ def visualize_loop_image(loop):
 
     steps = 16
 
-    all_instruments = list(PATTERN_INST.KEYS())
+    all_instruments = list(PATTERN_INST.keys())
 
     rows = len(all_instruments)
 
@@ -169,12 +169,11 @@ def visualize_loop_image(loop):
             draw.rectangle(
                 [x, y, x + cell_size, y + cell_size],
                 fill = color,
-                outline = "#666666"
+                outline = "#666666",
                 width = 2
             )
         #следующая строка (инструмент)
         y += cell_size + intervals
-    return img
     buffer = BytesIO()
     img.save(buffer, format="PNG")
     buffer.seek(0)
