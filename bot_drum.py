@@ -8,9 +8,10 @@ from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import CallbackQuery
+from aiogram.types import BufferedInputFile
 from dotenv import load_dotenv
 import os
-from main_drum import generate_random_loop, visualize_loop
+from main_drum import generate_random_loop, visualize_loop_image
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s- %(levelname)s - %(message)s')
 
@@ -31,11 +32,13 @@ async def start_command(message:types.Message):
 @dp.callback_query(lambda c: c.data =="generate")
 async def process_generate(callback_query: CallbackQuery):
     await callback_query.answer()
-
-    loop = generate_random_loop(steps=16)
-    viz = visualize_loop(loop)
-
-    await callback_query.message.answer(f"Сгенерированный паттерн:\n\n{viz}")
+    try:
+        loop = generate_random_loop(steps=16)
+        image_buffer = visualize_loop_image(loop)
+        await callback_query.message.answer_photo(photo=BufferedInputFile(image_buffer.getvalue(), filename="pattern.png"),caption="Сгенерированный паттерн")
+    except Exception as e:
+        logging.exception("Ошибка при генерации паттерна")
+        await callback_query.message.answer("Произошла ошибка при генерации")
 
 #запуск бота
 async def main():

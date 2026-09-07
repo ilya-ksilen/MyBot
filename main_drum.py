@@ -103,23 +103,23 @@ def generate_random_loop(steps=16):
 
     
 
-#визуальная часть
-def visualize_loop (loop):
-    header = "      " + " ".join(f"{i:2d}" for i in range(16))
-    lines = [header]
-    for inst in PATTERN_INST.keys():
-        if inst in loop:
-            pattern = loop [inst]
-        else:
-            pattern = [0] * 16
-        row = f"{inst:6s}"
-        for val in pattern:
-            if val == 1:
-                row += "🟥"
-            else:
-                row += "⬛"
-        lines.append(row)
-    return "\n".join(lines)
+#визуальная часть старая текстовая
+# def visualize_loop (loop):
+#     header = "      " + " ".join(f"{i:2d}" for i in range(16))
+#     lines = [header]
+#     for inst in PATTERN_INST.keys():
+#         if inst in loop:
+#             pattern = loop [inst]
+#         else:
+#             pattern = [0] * 16
+#         row = f"{inst:6s}"
+#         for val in pattern:
+#             if val == 1:
+#                 row += "🟥"
+#             else:
+#                 row += "⬛"
+#         lines.append(row)
+#     return "\n".join(lines)
 
 #визуал pillow
 def visualize_loop_image(loop):
