@@ -124,16 +124,19 @@ def generate_random_loop(steps=16):
 #визуал pillow
 def visualize_loop_image(loop):
     #кнопки
-    cell_size = 40
+    cell_size = 50
     intervals = 8 #между кнопок интервал
-    left_margin = 120
-    top_margin = 40
+    left_margin = 140
+    top_margin = 100
 
     steps = 16
 
     all_instruments = list(PATTERN_INST.keys())
 
     rows = len(all_instruments)
+    
+    font_title = ImageFont.truetype("arial.ttf",34)
+    font_inst = ImageFont.truetype("arial.ttf",26)
 
     #размеры изображения
     width = left_margin + steps*(cell_size + intervals) + intervals
@@ -142,12 +145,21 @@ def visualize_loop_image(loop):
     img = Image.new("RGB", (width, height), color="#2a2a2a")
     draw = ImageDraw.Draw(img)
 
-    draw.text((10, 10), "DRUM PATTERN", fill="white")
+    draw.text((10, 10), "DRUM PATTERN", fill="red", font=font_title)
 
     y=top_margin
 
+    dot_radius = 5
+    dot_y = 75
+    for step in [0,4,8,12]:
+        x_center = left_margin + step * (cell_size + intervals)+ cell_size //2
+        draw.ellipse(
+            [x_center - dot_radius, dot_y - dot_radius, x_center + dot_radius, dot_y + dot_radius],
+            fill = "white"
+        )
+
     for instrument in all_instruments:
-        draw.text((10, y+5), instrument, fill="white")  #название инструмента (слева)
+        draw.text((10, y+5), instrument, fill="white", font=font_inst)  #название инструмента (слева)
 
         #получение паттерна для этого инструмента
         if instrument in loop:
