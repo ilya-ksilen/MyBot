@@ -33,7 +33,7 @@ async def start_command(message:types.Message):
 async def process_generate(callback_query: CallbackQuery):
     await callback_query.answer()
     try:
-        loop = generate_random_loop(steps=16)
+        loop = generate_random_loop("detroit",steps=16)
         image_buffer = visualize_loop_image(loop)
         await callback_query.message.answer_photo(photo=BufferedInputFile(image_buffer.getvalue(), filename="pattern.png"),caption="Сгенерированный паттерн")
     except Exception as e:
