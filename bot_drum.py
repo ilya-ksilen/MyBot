@@ -24,9 +24,17 @@ dp = Dispatcher()
 #обработка команды start
 @dp.message(Command("start"))
 async def start_command(message:types.Message):
-    button = InlineKeyboardButton(text="Сгенерировать паттерн", callback_data="generate")
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[[button]])
-    await message.answer("Привет! Жми кнопку, сгенерируем драмку.", reply_markup=keyboard)
+    logging.info(f"Команда /start от пользователя {message.from_user.id}")
+
+    buttons = [
+        [InlineKeyboardButton(text="🌆 Detroit", callback_data="style:detroit")],
+        [InlineKeyboardButton(text="🏭 Industrial", callback_data="style:industrial")]
+    ]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+    
+    # button = InlineKeyboardButton(text="Сгенерировать паттерн", callback_data="generate") старый вариант с одной кнопкой
+    # keyboard = InlineKeyboardMarkup(inline_keyboard=[[button]])
+    await message.answer("👋Привет! Выбери стиль и после жми сгенерировать.", reply_markup=keyboard)
 
 #обработка нажатия кнопки
 @dp.callback_query(lambda c: c.data =="generate")
