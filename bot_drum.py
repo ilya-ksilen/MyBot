@@ -36,20 +36,42 @@ async def start_command(message:types.Message):
     # keyboard = InlineKeyboardMarkup(inline_keyboard=[[button]])
     await message.answer("👋Привет! Выбери стиль и после жми сгенерировать.", reply_markup=keyboard)
 
-#обработка нажатия кнопки
-@dp.callback_query(lambda c: c.data.startswitch("style:"))
+#обработка нажатия кнопок
+@dp.callback_query(lambda c: c.data.startswith("style:"))
 async def process_style(callback_query: CallbackQuery):
     await callback_query.answer()
     style = callback_query.data.split(":")[1]
 
     logging.info(f"Пользователь {callback_query.from_user.id} выбрал стиль {style}")
 
-    button = InlineKeyboardButton(text = "🎲 Сгенерировать паттерн", callback_data=f"generate{style}")
+    button = InlineKeyboardButton(text = "🎲 Сгенерировать паттерн", callback_data=f"generate:{style}")
     keyboard = InlineKeyboardMarkup(inline_keyboard=[[button]])
-    await callback_query,message.answer(
+    await callback_query.message.answer(
         f"Стиль: {style}. Жми кнопку!",
         reply_markup=keyboard
     )
+
+@dp.callback_query(lambda c: c.data.startswith("generate:"))
+async def process_generate(callback_query: CallbackQuery):
+    await callback_query.answer()
+
+    # Извлекаем стиль
+    style = callback_query.data.split(":")[1]
+
+    logging.info(f"Генерация в стиле {style} для пользователя {callback_query.from_user.id}")
+
+    try:
+        loop = generate_random_loop(style, steps=16)
+        image_buffer = visualize_loop_image(loop)
+
+        await callback_query.message.answer_photo(
+            photo=BufferedInputFile(image_buffer.getvalue(), filename="pattern.png"),
+            caption=f"Стиль: {style}"
+        )
+        logging.info("Паттерн успешно отправлен")
+    except Exception as e:
+        logging.exception("Ошибка при генерации паттерна")
+        await callback_query.message.answer("Произошла ошибка при генерации. Попробуй ещё раз.")
 
     # try:
     #     loop = generate_random_loop("detroit",steps=16)
