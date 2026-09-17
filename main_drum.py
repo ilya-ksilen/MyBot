@@ -90,7 +90,7 @@ STYLES = {
         "bong": 0.7,
         "tom": 0.3,
         "bell": 0.3
-}
+    },
     "industrial":{
         "clap": 0.1,
         "openhat": 0.7,
@@ -103,32 +103,19 @@ STYLES = {
         "tom": 0.5,
         "bell": 0.4
     }
-    # "minimal":{
-    #     "clap": 0.6,
-    #     "openhat": 0.4,
-    #     "rimshot": 0.3,
-    #     "ride": 0.0,
-    #     "crash": 1.0,
-    #     "shaker": 0.0,
-    #     "cong": 0.0,
-    #     "bong": 0.0,
-    #     "tom": 0.0,
-    #     "bell": 0.0
-    #     }
 }
-
+#функция выбора инструментов, согласно вероятностям
 def select_instruments(style):
     mandatory = ["kick","snare","closehat"]
     chance = STYLES[style]
-    others = list(chances.keys())
-    selected_others = [inst for inst in others if random.random() < chances[inst]]
-
+    others = list(chance.keys())
+    selected_others = [inst for inst in others if random.random() < chance[inst]]
     if len(selected_others) < 4:
         remainig = [i for i in others if i not in selected_others]
         need = 4 - len(selected_others)
         selected_others += random.sample(remaining, min(need, len(remainig)))
-    elif len(selected_others) > 6:
-        selected_others = random.sample(selected_others, 6)
+    elif len(selected_others) > 9:
+        selected_others = random.sample(selected_others, 9)
 
     return mandatory + selected_others
 
