@@ -14,3 +14,15 @@ print("DEBUG: bot_basslead.py начал выполняться", file=sys.stder
 
 load_dotenv()
 TOKEN = os.getenv("BASSLEAD_BOT_TOKEN")
+bot = Bot(token=BASSLEAD_BOT_TOKEN)
+dp=Dispatcher()
+
+# обработка кнопки старт
+@dp.message(Command("start"))
+async def start_command(message:types.Message):
+    logging.info("команда start от пользователя {message.from_user.id}")
+
+    buttons = [
+        # здесь кнопки режимов надо выбрать Бас, Лид
+    ]
+    
