@@ -61,8 +61,8 @@ async def process_mode(callback_query: CallbackQuery):
 
     buttons = [
         [
-        InlineKeyboardButton(text="Нота:{notes[0]}",callback_data="toggle_note"),
-        InlineKeyboardButton(text="Лад^{scale[0]}",callback_data="toggle_scale"),
+        InlineKeyboardButton(text=f"Нота:{NOTES[0]}",callback_data="toggle_note"),
+        InlineKeyboardButton(text=f"Лад:{SCALES[0]}",callback_data="toggle_scale"),
     ],
     [InlineKeyboardButton(text="🎲Сгенерировать паттерн",callback_data="generate")],
     ]
@@ -75,6 +75,47 @@ async def process_mode(callback_query: CallbackQuery):
     )
 
     await callback_query.message.answer(text, reply_markup=keyboard)
+
+#дальше идет обработчки кнопки нота и далее обработчик кнопки лад (с edit.text обязательно)
+
+@dp.callback_query(lambda c: c.data =="toggle_note")
+async def toggle_note(callback_query: CallbackQuery):
+    await callback_query.answer()
+
+    user_id = callback_query.from_user.id
+    state = user_state[user_id]
+
+    state["note_idx"] = (state["note_idx"] + 1) % len(NOTES)
+
+    text = (
+        f"Режим: {state["mode"].capitalize()}\n"
+        f"Нота: {NOTES[state["note_idx"]]}\n"
+        f"Лад: {SCALE[state["scale_idx"]]}"
+    )
+    buttons = [
+        
+    ]
+
+
+
+@dp.callback_query(lambda c: c.data == "toggle_scale")
+async def toggle_scale(callback_query: CallbackQuery):
+    await callback_query.answer()
+
+    user_id = callback_query.from_user.id
+    state = user_state[user_id]
+
+    state["scale_idx"] = (state["scale_idx"] + 1) % len(SCALES)
+
+    text = (
+        f"Режим: {state["mode"].capitalize()}\n"
+        f"Нота: {NOTES[state["note_idx"]]}\n"
+        f"Лад: {SCALES[state["scale_idx"]]}"
+    )
+
+    buttons = [
+
+    ]
 
 
 async def main():
