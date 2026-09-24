@@ -23,7 +23,8 @@ def get_mask_b (name):
         return Masks_bass["simple"]
 
 # Связь режима с масками
-PATTERN_BASS = {"bass":["simple","offbeat","swing","power","voltage","live11","live12","live13","live16"]}
+PATTERN_BASS = ["simple","offbeat","swing","power","voltage","live11","live12","live13","live16"]
+PATTERN_LEAD = ["rand1","rand2","rand3","rand4","rand5"]
 
 Masks_lead = {
     "rand1":[1,1,1,0,0,0,0,0,1,1,1,1,0,0,1,1],
@@ -51,6 +52,10 @@ def get_key (name):
     else:
         logging.warning(f"Scale: {name} не найден! Использую по умолчанию minor.")
         return Scale_key ["minor"]    
+
+# def midi_to_name(midi):
+#     # note = 
+#     return NOTES[midi % 12] не уверен что эта функция в main должна быть
 
 def generate_bass (config):
     root_note = config["root_note"]
@@ -94,4 +99,16 @@ def generate_lead (config):
         else:
             result.append(None)
     return result, count_note
+
+if __name__ == "__main__":
+        bass_config={
+            "root_note" : 36,
+            "scale" : "minor",
+            "mask" : "power",
+            "steps" : 16,
+            "oct_shift" : 0}
+        notes, count = generate_bass(bass_config)
+        print("Бас: ",notes)
+        print("Всего нот: ",count)
+        
 
