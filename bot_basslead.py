@@ -6,7 +6,7 @@ from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, BufferedInputFile
 from dotenv import load_dotenv
 import os
-from main_basslead import generate_bass, generate_lead, PATTERN_BASS, PATTERN_LEAD, NOTES, SCALES,STEPS
+from main_basslead import generate_bass, generate_lead, PATTERN_BASS, PATTERN_LEAD
 import random
 
 logging.basicConfig(level=logging.DEBUG,
@@ -217,7 +217,7 @@ async def process_generate(callback_query: CallbackQuery):
             + " ".join(names)
         )
 
-        await callback_query.message.answwr(text)
+        await callback_query.message.answer(text)
     
     except Exception:
         logging.exception("Ошибка при генерации паттерна")
