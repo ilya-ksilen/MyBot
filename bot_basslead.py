@@ -160,31 +160,69 @@ async def toggle_steps(callback_query: CallbackQuery):
     await callback_query.message.edit_text(text, reply_markup=keyboard)
 
 def midi_to_name(midi):
-    return NOTES[midi % 12]
+    note = NOTES[midi % 12]
+    octave = midi // 12 - 1
+    return f"{note}{octave}"
 
-#далее идет обработчик генерации ВНИМАНИЕ!!! Я его пока просто скопировал из драм генератора!
+#далее идет обработчик генерации 
 
-@dp.callback_query(lambda c: c.data.startswith("generate:"))
+@dp.callback_query(lambda c: c.data=="generate")
 async def process_generate(callback_query: CallbackQuery):
     await callback_query.answer()
 
-    # Извлекаем стиль
-    style = callback_query.data.split(":")[1]
+    user_id = callback_query.from_user.id
 
-    logging.info(f"Генерация в стиле {style} для пользователя {callback_query.from_user.id}")
-
+    if user_id not in user_state:
+        await callback_query.answer("Сначала выбери режим через /start", show_alert=True)
+        return
+    
     try:
-        loop = generate_random_loop(style, steps=16)
-        image_buffer = visualize_loop_image(loop)
+        state = user_state[user_id]
+        mode = state["mode"]
 
-        await callback_query.message.answer_photo(
-            photo=BufferedInputFile(image_buffer.getvalue(), filename="pattern.png"),
-            caption=f"Стиль: {style}"
+        steps = STEPS[state["steps_idx"]]
+        scale = SCALES[state["scales_idx"]]
+        note = NOTES[state["note_idx"]]
+
+        if mode == "bass":
+            root_note = 36 + note_idx
+            mask_name = random.choice(PATTERN_BASS)
+        else:
+            root_note = 60 + note_idx
+            mask_name = random.choice(PATTERN_LEAD)
+
+        config = {
+            "root_note":root_note,
+            "scale":scale,
+            "mask":mask_name,
+            "steps":steps,
+            "oct_shift":0
+        }
+
+        logging.info(f"Генерация в режиме {mode} для пользователя {user_id}, config {config}")
+
+        if mode == "bass":
+            notes, count = generate_bass(config)
+        else:
+            notes, count = generate_lead(config)
+
+        names = [midi_to_name(n) if n is not None else "-" for n in notes]
+        text = (
+            f"Режим: {mode.capitalize()}\n"
+            f"Нота: {NOTES[note_idx]}\n"
+            f"Лад: {SCALES[state["scale_idx"]]}\n"
+            f"Шаги: {steps}\n"
+            f"Маска: {mask_name}\n"
+            f"Всего нот: {count}\n\n"
+            + " ".join(names)
         )
-        logging.info("Паттерн успешно отправлен")
-    except Exception as e:
+
+        await callback_query.message.answwr(text)
+    
+    except Exception:
         logging.exception("Ошибка при генерации паттерна")
         await callback_query.message.answer("Произошла ошибка при генерации. Попробуй ещё раз.")
+
 
 async def main():
     try:
