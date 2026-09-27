@@ -112,3 +112,33 @@ if __name__ == "__main__":
         print("Всего нот: ",count)
         
 
+def generate_visual(notes, title,steps):
+    cols, rows = LAYOUT[steps]
+
+    cell_size = 50
+    intervals = 8
+    top_margin = 100
+    label_height = 25
+    bottom_margin = 20
+
+    width = steps*(cell_size + intervals) + intervals
+    height = top_margin + rows*(cell_size + intervals) + intervals
+
+    img = Image.new("RGB", (width, height), color="#2a2a2a")
+    draw = ImageDraw.Draw(img)
+
+    font_title = ImageFont.truetype("impact.ttf", 34)
+    font_label = ImageFont.truetype("impact.ttf", 14)
+    font_note = ImageFont.truetype("impact.ttf", 18)
+
+    draw.text((10,10), title, fill="red", font=font_title)
+
+   dot_radius = 5
+    dot_y = 75
+    for step in [0,4,8,12]:
+        x_center = left_margin + step * (cell_size + intervals)+ cell_size //2
+        draw.ellipse(
+            [x_center - dot_radius, dot_y - dot_radius, x_center + dot_radius, dot_y + dot_radius],
+            fill = "white"
+        )
+
