@@ -6,7 +6,7 @@ from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, BufferedInputFile
 from dotenv import load_dotenv
 import os
-from main_basslead import generate_bass, generate_lead
+from main_basslead import generate_bass, generate_lead, PATTERN_BASS, PATTERN_LEAD, NOTES, SCALES,STEPS
 import random
 
 logging.basicConfig(level=logging.DEBUG,
@@ -54,7 +54,7 @@ async def process_mode(callback_query: CallbackQuery):
     user_id = callback_query.from_user.id
 
     user_state[user_id] = {
-        "steps_idx": steps,
+        "steps_idx": 0,
         "mode":mode,
         "note_idx":0,
         "scale_idx":0
@@ -181,8 +181,8 @@ async def process_generate(callback_query: CallbackQuery):
         mode = state["mode"]
 
         steps = STEPS[state["steps_idx"]]
-        scale = SCALES[state["scales_idx"]]
-        note = NOTES[state["note_idx"]]
+        scale = SCALES[state["scale_idx"]]
+        note_idx = state["note_idx"]
 
         if mode == "bass":
             root_note = 36 + note_idx
