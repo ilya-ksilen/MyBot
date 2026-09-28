@@ -26,6 +26,14 @@ def get_mask_b (name):
 PATTERN_BASS = ["simple","offbeat","swing","power","voltage","live11","live12","live13","live16"]
 PATTERN_LEAD = ["rand1","rand2","rand3","rand4","rand5"]
 
+NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
+SCALES = ["minor","major","frig","dor"]
+
+LAYOUT = {
+    16:(8,2),
+    32:(16,2),
+    64:(16,4)
+}
 Masks_lead = {
     "rand1":[1,1,1,0,0,0,0,0,1,1,1,1,0,0,1,1],
     "rand2":[1,1,0,0,1,0,1,0],
@@ -53,9 +61,6 @@ def get_key (name):
         logging.warning(f"Scale: {name} не найден! Использую по умолчанию minor.")
         return Scale_key ["minor"]    
 
-# def midi_to_name(midi):
-#     # note = 
-#     return NOTES[midi % 12] не уверен что эта функция в main должна быть
 
 def generate_bass (config):
     root_note = config["root_note"]
@@ -111,8 +116,12 @@ if __name__ == "__main__":
         print("Бас: ",notes)
         print("Всего нот: ",count)
         
+def midi_to_name(midi):
+    note = NOTES[midi % 12]
+    octave = midi // 12 - 1
+    return f"{note}{octave}"
 
-def generate_visual(notes, title,steps):
+def generate_visual(notes, title,steps, note_color='#ff8800'):
     cols, rows = LAYOUT[steps]
 
     cell_size = 50
@@ -121,8 +130,8 @@ def generate_visual(notes, title,steps):
     label_height = 25
     bottom_margin = 20
 
-    width = steps*(cell_size + intervals) + intervals
-    height = top_margin + rows*(cell_size + intervals) + intervals
+    width = cols*(cell_size + intervals) + intervals
+    height = top_margin + rows*(cell_size + intervals + label_height) + intervals
 
     img = Image.new("RGB", (width, height), color="#2a2a2a")
     draw = ImageDraw.Draw(img)
@@ -133,12 +142,48 @@ def generate_visual(notes, title,steps):
 
     draw.text((10,10), title, fill="red", font=font_title)
 
-   dot_radius = 5
-    dot_y = 75
+    dot_radius = 4
+    dot_y = top_margin - 12
     for step in [0,4,8,12]:
-        x_center = left_margin + step * (cell_size + intervals)+ cell_size //2
+        x_center = intervals + step * (cell_size + intervals)+ cell_size //2
         draw.ellipse(
             [x_center - dot_radius, dot_y - dot_radius, x_center + dot_radius, dot_y + dot_radius],
             fill = "white"
         )
+    for row_index in range(rows):
+        start = row_index * cols
+        end = start + cols
+        row_notes = notes[start:end]
+
+        y = top_margin + row_index * (cell_size + intervals + label_height)
+
+        for col_index in range(cols):
+            x = intervals + col_index * (cell_size + intervals)
+            note = row_notes[col_index]
+
+            if note is None:
+                color = "#444444"
+                text = ""
+            else:
+                color = note_color
+                text = midi_to_name(note)
+            draw.rectangle([x, y + label_height, x + cell_size, y + label_height + cell_size],
+                           fill=color, outline="#666666", width=2)
+
+            if text:
+                bbox = draw.textbbox((0, 0), text, font=font_note)
+                tw = bbox[2] - bbox[0]
+                th = bbox[3] - bbox[1]
+                tx = x + (cell_size - tw) // 2
+                ty = y + label_height + (cell_size - th) // 2 - 2
+                draw.text((tx, ty), text, fill="white", font=font_note)
+
+        label = f"steps {start + 1}-{end}"
+        draw.text((intervals, y), label, fill="white", font=font_label)
+
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+    return buffer
+
 
