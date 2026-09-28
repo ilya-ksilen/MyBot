@@ -126,7 +126,7 @@ def generate_visual(notes, title,steps, note_color='#ff8800'):
 
     cell_size = 50
     intervals = 8
-    top_margin = 100
+    top_margin = 80
     label_height = 25
     bottom_margin = 20
 
@@ -157,9 +157,9 @@ def generate_visual(notes, title,steps, note_color='#ff8800'):
 
         y = top_margin + row_index * (cell_size + intervals + label_height)
 
-        for col_index in range(cols):
-            x = intervals + col_index * (cell_size + intervals)
-            note = row_notes[col_index]
+        for col_idx in range(cols):
+            x = intervals + col_idx * (cell_size + intervals)
+            note = row_notes[col_idx]
 
             if note is None:
                 color = "#444444"
@@ -174,12 +174,12 @@ def generate_visual(notes, title,steps, note_color='#ff8800'):
             )
 
             if text:
-                bbox = draw.textbbox((0, 0), text, font=font_note)
-                tw = bbox[2] - bbox[0]
-                th = bbox[3] - bbox[1]
-                tx = x + (cell_size - tw) // 2
-                ty = y + (cell_size - th) // 2 - 2
-                draw.text((tx, ty), text, fill="white", font=font_note)
+                space = draw.textbbox((0, 0), text, font=font_note)
+                text_width = space[2] - space[0]
+                text_height = space[3] - space[1]
+                text_x = x + (cell_size - text_width) // 2
+                text_y = y + (cell_size - text_height) // 2 - 2
+                draw.text((text_x, text_y), text, fill="white", font=font_note)
 
         label = f"steps {start + 1}-{end}"
         draw.text((intervals, y + cell_size + 5), label, fill="white", font=font_label)
