@@ -6,7 +6,7 @@ from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, BufferedInputFile
 from dotenv import load_dotenv
 import os
-from main_basslead import generate_bass, generate_lead, PATTERN_BASS, PATTERN_LEAD
+from main_basslead import generate_bass, generate_lead, PATTERN_BASS, PATTERN_LEAD, generate_visual, midi_to_name, SCALES, NOTES
 import random
 
 logging.basicConfig(level=logging.DEBUG,
@@ -21,11 +21,9 @@ TOKEN = os.getenv("BASSLEAD_BOT_TOKEN")
 bot = Bot(token=TOKEN)
 dp=Dispatcher()
 
-NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
-SCALES = ["minor","major","frig","dor"]
-STEPS = [16,32,64]
-
 user_state={}
+
+STEPS = [16,32,64]
 
 # обработка кнопки старт
 @dp.message(Command("start"))
@@ -159,11 +157,6 @@ async def toggle_steps(callback_query: CallbackQuery):
     
     await callback_query.message.edit_text(text, reply_markup=keyboard)
 
-def midi_to_name(midi):
-    note = NOTES[midi % 12]
-    octave = midi // 12 - 1
-    return f"{note}{octave}"
-
 #далее идет обработчик генерации 
 
 @dp.callback_query(lambda c: c.data=="generate")
@@ -205,19 +198,12 @@ async def process_generate(callback_query: CallbackQuery):
             notes, count = generate_bass(config)
         else:
             notes, count = generate_lead(config)
-
-        names = [midi_to_name(n) if n is not None else "-" for n in notes]
-        text = (
-            f"Режим: {mode.capitalize()}\n"
-            f"Нота: {NOTES[note_idx]}\n"
-            f"Лад: {SCALES[state["scale_idx"]]}\n"
-            f"Шаги: {steps}\n"
-            f"Маска: {mask_name}\n"
-            f"Всего нот: {count}\n\n"
-            + " ".join(names)
+        title = "BASS PATTERN" if mode == "bass" else "LEAD PATTERN"
+        image_buffer = generate_visual(notes, title, steps)
+        await callback_query.message.answer_photo(
+        photo=BufferedInputFile(image_buffer.getvalue(), filename="pattern.png"),
+        caption=f"{mode.capitalize()}: {NOTES[note_idx]} {SCALES[state['scale_idx']]} | маска: {mask_name}"
         )
-
-        await callback_query.message.answer(text)
     
     except Exception:
         logging.exception("Ошибка при генерации паттерна")
