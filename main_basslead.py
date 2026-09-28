@@ -142,7 +142,7 @@ def generate_visual(notes, title,steps, note_color='#ff8800'):
 
     draw.text((10,10), title, fill="red", font=font_title)
 
-    dot_radius = 4
+    dot_radius = 3
     dot_y = top_margin - 12
     for step in [0,4,8,12]:
         x_center = intervals + step * (cell_size + intervals)+ cell_size //2
@@ -167,19 +167,22 @@ def generate_visual(notes, title,steps, note_color='#ff8800'):
             else:
                 color = note_color
                 text = midi_to_name(note)
-            draw.rectangle([x, y + label_height, x + cell_size, y + label_height + cell_size],
-                           fill=color, outline="#666666", width=2)
+
+            draw.rectangle(
+                [x, y, x + cell_size, y + cell_size],
+                fill=color, outline="#666666", width=2
+            )
 
             if text:
                 bbox = draw.textbbox((0, 0), text, font=font_note)
                 tw = bbox[2] - bbox[0]
                 th = bbox[3] - bbox[1]
                 tx = x + (cell_size - tw) // 2
-                ty = y + label_height + (cell_size - th) // 2 - 2
+                ty = y + (cell_size - th) // 2 - 2
                 draw.text((tx, ty), text, fill="white", font=font_note)
 
         label = f"steps {start + 1}-{end}"
-        draw.text((intervals, y), label, fill="white", font=font_label)
+        draw.text((intervals, y + cell_size + 5), label, fill="white", font=font_label)
 
     buffer = BytesIO()
     img.save(buffer, format="PNG")

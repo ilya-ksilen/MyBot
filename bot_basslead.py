@@ -196,10 +196,12 @@ async def process_generate(callback_query: CallbackQuery):
 
         if mode == "bass":
             notes, count = generate_bass(config)
+            note_color = "#ff8800"
         else:
             notes, count = generate_lead(config)
+            note_color = "#00aaff"
         title = "BASS PATTERN" if mode == "bass" else "LEAD PATTERN"
-        image_buffer = generate_visual(notes, title, steps)
+        image_buffer = generate_visual(notes, title, steps, note_color=note_color)
         await callback_query.message.answer_photo(
         photo=BufferedInputFile(image_buffer.getvalue(), filename="pattern.png"),
         caption=f"{mode.capitalize()}: {NOTES[note_idx]} {SCALES[state['scale_idx']]} | маска: {mask_name}"
