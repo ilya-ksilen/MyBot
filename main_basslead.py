@@ -26,14 +26,27 @@ def get_mask_b (name):
 PATTERN_BASS = ["simple","offbeat","swing","power","voltage","live11","live12","live13","live16"]
 PATTERN_LEAD = ["rand1","rand2","rand3","rand4","rand5"]
 
+# словари режимов и поч настр
 NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 SCALES = ["minor","major","frig","dor"]
+GENRES = ["detroit","industrial"]
+GENRE_EMOJI = {
+    "detroit": "☺",
+    "industrial": "🏭"
+}
+MODES = ["bass","lead"]
+MODES_EMOJI = {
+    "bass": '🎸',
+    "lead": '🎹'
+}
+STEPS = [16,32,64]
 
 LAYOUT = {
     16:(8,2),
     32:(16,2),
     64:(16,4)
 }
+
 Masks_lead = {
     "rand1":[1,1,1,0,0,0,0,0,1,1,1,1,0,0,1,1],
     "rand2":[1,1,0,0,1,0,1,0],
@@ -111,7 +124,8 @@ if __name__ == "__main__":
             "scale" : "minor",
             "mask" : "power",
             "steps" : 16,
-            "oct_shift" : 0}
+            "oct_shift" : 0
+            }
         notes, count = generate_bass(bass_config)
         print("Бас: ",notes)
         print("Всего нот: ",count)
@@ -120,6 +134,7 @@ def midi_to_name(midi):
     note = NOTES[midi % 12]
     octave = midi // 12 - 1
     return f"{note}{octave}"
+
 
 def generate_visual(notes, title,steps, note_color='#ff8800'):
     cols, rows = LAYOUT[steps]

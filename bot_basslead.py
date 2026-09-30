@@ -6,7 +6,7 @@ from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, BufferedInputFile
 from dotenv import load_dotenv
 import os
-from main_basslead import generate_bass, generate_lead, PATTERN_BASS, PATTERN_LEAD, generate_visual, midi_to_name, SCALES, NOTES
+from main_basslead import generate_bass, generate_lead, PATTERN_BASS, PATTERN_LEAD, generate_visual, midi_to_name, SCALES, NOTES, STEPS, GENRES, MODES, GENRE_EMOJI,MODES_EMOJI
 import random
 
 logging.basicConfig(level=logging.DEBUG,
@@ -25,22 +25,60 @@ user_state={}
 
 STEPS = [16,32,64]
 
+# главный экран-меню
+def main_screen(state):
+    genre = GENRES[state["genre_idx"]]
+    mode = MODES[state["mode_idx"]]
+    note = NOTES[state["note_idx"]]
+    scale = SCALES[state["scale_idx"]]
+    steps = STEPS[state["steps_idx"]]
+
+    text = (
+        "🎛ТЕХНО-ГЕНЕРАТОР🎛\n\n"
+        "Привет! Я генерирую бас-линии и лид-партии в техно для твоего вдохновения!\n"
+        "Генерация основана на глубоком анализе жанра и использует алгоритм цепей Маркова\n\n"
+        "Режимы техно:\n"
+        "☺Detroit - классический, фанковый, катящийся\n"
+        "🏭Industrial - агрессивный, индустриальный, ломанный\n\n"
+        "Тип партии:\n"
+        "🎸Bass - генерация бас-линии\n"
+        "🎹Lead - генерация лид-партии\n\n"
+        "Выбирай настройки кнопками и жми 🎲 Сгенерировать"
+    )
+
+    buttons = [
+        [
+            InlineKeyboardButton(text=f"{GENRE_EMOJI[genre]} {genre.capitalize()}", callback_data="toggle_genre"),
+            InlineKeyboardButton(text=f"{MODES_EMOJI[mode]} {mode.capitalize()}", callback_data="toggle_mode")
+        ],
+
+        [
+            InlineKeyboardButton(text=f"{note}",callback_data="toggle_note"),
+            InlineKeyboardButton(text=f"{scale}",callback_data="toggle_scale"),
+            InlineKeyboardButton(text=f"⏱Шагов: {steps}",callback_data="toggle_steps")
+        ],
+        [
+            InlineKeyboardButton(text=f"Сгенерировать", callback_data="generate")
+            ]
+    ]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+    return text, keyboard
+
 # обработка кнопки старт
 @dp.message(Command("start"))
 async def start_command(message:types.Message):
     logging.info(f"команда start от пользователя {message.from_user.id}")
 
-    buttons = [
-        [
-    InlineKeyboardButton(text="🎸Bass",callback_data="mode:bass"), 
-    InlineKeyboardButton(text="🎹Lead",callback_data="mode:lead"), 
-    ],
-    ]
-    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
-
-    await message.answer("Привет! Это генератор bass/lead партий для техно.\n"
-    "Выбери режим:", 
-    reply_markup=keyboard,)
+    user_id = message.from_user.id
+    user_state[user_id] = {
+        "genre_idx": 0,
+        "mode_idx": 0,
+        "note_idx": 0,
+        "scale_idx": 0,
+        "steps_idx": 0
+    }
+    text, keyboard = main_screen(user_state[user_id])
+    await message.answer(text, reply_markup=keyboard)
 
 #дальше идет обработка нажатия режима бас лид
 
