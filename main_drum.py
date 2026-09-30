@@ -104,6 +104,11 @@ STYLES = {
         "bell": 0.4
     }
 }
+
+CELL_COLORS = {
+    "detroit": "#ff8800",
+    "industrial": "red"
+}
 #функция выбора инструментов, согласно вероятностям
 def select_instruments(style):
     mandatory = ["kick","snare","closehat"]
@@ -160,8 +165,8 @@ def generate_random_loop(style, steps=16):
 #     return "\n".join(lines)
 
 #визуал pillow
-def visualize_loop_image(loop):
-    #кнопки
+def visualize_loop_image(loop, style):
+
     cell_size = 50
     intervals = 8 #между кнопок интервал
     left_margin = 140
@@ -176,7 +181,7 @@ def visualize_loop_image(loop):
     font_title = ImageFont.truetype("impact.ttf",34)
     font_inst = ImageFont.truetype("arial.ttf",26)
 
-    #размеры изображения
+    #размеры разметки
     width = left_margin + steps*(cell_size + intervals) + intervals
     height = top_margin + rows*(cell_size + intervals) + intervals
 
@@ -209,11 +214,13 @@ def visualize_loop_image(loop):
         for step in range(steps):
             x = left_margin + step * (cell_size + intervals)
 
-           #определение цвета кнопки (горит - не горит)
+            # цвет активной кнопки
+            cell_color = CELL_COLORS.get(style, "ff8800")
+           
             if pattern[step] == 1:
-                color = "#ff8800" #оранжевый
+                color = cell_color #оранжевый - активный шаг (по стилю цвет)
             else:
-                color = "#444444" #темно-серый
+                color = "#444444" #серый - не активный шаг
 
             #рисуем форму кнопки
             draw.rectangle(
