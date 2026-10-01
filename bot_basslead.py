@@ -95,6 +95,7 @@ async def toggle_genre(callback_query: CallbackQuery):
     state["genre_idx"]= (state["genre_idx"] + 1) % len(GENRES)
     text, keyboard = main_screen(state)
     
+    genre = GENRES[state["genre_idx"]]
     logging.info(f"Пользователь {user_id} выбрал жанр {genre}")
 
     await callback_query.message.edit_text(text, reply_markup=keyboard)
@@ -113,6 +114,7 @@ async def toggle_mode(callback_query: CallbackQuery):
     state["mode_idx"]= (state["mode_idx"] + 1) % len(MODES)
     text, keyboard = main_screen(state)
     
+    mode = MODES[state["mode_idx"]]
     logging.info(f"Пользователь {user_id} выбрал режим {mode}")
 
     await callback_query.message.edit_text(text, reply_markup=keyboard)
@@ -131,6 +133,7 @@ async def toggle_note(callback_query: CallbackQuery):
     state["note_idx"]= (state["note_idx"] + 1) % len(NOTES)
     text, keyboard = main_screen(state)
     
+    note = NOTES[state["note_idx"]]
     logging.info(f"Пользователь {user_id} выбрал ноту {note}")
 
     await callback_query.message.edit_text(text, reply_markup=keyboard)
@@ -148,6 +151,7 @@ async def toggle_scale(callback_query: CallbackQuery):
     state["scale_idx"]= (state["scale_idx"] + 1) % len(SCALES)
     text, keyboard = main_screen(state)
     
+    scale = SCALES[state["scale_idx"]]
     logging.info(f"Пользователь {user_id} выбрал лад {scale}")
 
     await callback_query.message.edit_text(text, reply_markup=keyboard)
@@ -165,8 +169,8 @@ async def toggle_steps(callback_query: CallbackQuery):
     state["steps_idx"]= (state["steps_idx"] + 1) % len(STEPS)
     text, keyboard = main_screen(state)
     
+    steps = STEPS[state["steps_idx"]]
     logging.info(f"Пользователь {user_id} выбрал кол-во шагов {steps}")
-
     await callback_query.message.edit_text(text, reply_markup=keyboard)
 
 #далее идет обработчик генерации 
