@@ -80,119 +80,93 @@ async def start_command(message:types.Message):
     text, keyboard = main_screen(user_state[user_id])
     await message.answer(text, reply_markup=keyboard)
 
-#дальше идет обработка нажатия режима бас лид
+#дальше идет обработка нажатия всех кнопок на main_screen (с edit_text чтобы не множились сообщения от бота)
 
-@dp.callback_query(lambda c:c.data.startswith("mode:"))
-async def process_mode(callback_query: CallbackQuery):
+@dp.callback_query(lambda c:c.data == "toggle_genre")
+async def toggle_genre(callback_query: CallbackQuery):
     await callback_query.answer()
 
-    mode = callback_query.data.split(":")[1] 
     user_id = callback_query.from_user.id
+    if user_id  not in user_state:
+        await callback_query.answer("Сначала /start", show_alert = True)
+        return
 
-    user_state[user_id] = {
-        "steps_idx": 0,
-        "mode":mode,
-        "note_idx":0,
-        "scale_idx":0
-    }
+    state = user_state[user_id]
+    state["genre_idx"]= (state["genre_idx"] + 1) % len(GENRES)
+    text, keyboard = main_screen(state)
+    
+    logging.info(f"Пользователь {user_id} выбрал жанр {genre}")
+
+    await callback_query.message.edit_text(text, reply_markup=keyboard)
+
+
+@dp.callback_query(lambda c:c.data == "toggle_mode")
+async def toggle_mode(callback_query: CallbackQuery):
+    await callback_query.answer()
+
+    user_id = callback_query.from_user.id
+    if user_id  not in user_state:
+        await callback_query.answer("Сначала /start", show_alert = True)
+        return
+
+    state = user_state[user_id]
+    state["mode_idx"]= (state["mode_idx"] + 1) % len(MODES)
+    text, keyboard = main_screen(state)
+    
     logging.info(f"Пользователь {user_id} выбрал режим {mode}")
 
-    buttons = [
-        [
-        InlineKeyboardButton(text=f"Нота:{NOTES[0]}",callback_data="toggle_note"),
-        InlineKeyboardButton(text=f"Лад:{SCALES[0]}",callback_data="toggle_scale"),
-        InlineKeyboardButton(text=f"Шаги:{STEPS[0]}",callback_data="toggle_steps"),
-    ],
-    [InlineKeyboardButton(text="🎲Сгенерировать паттерн",callback_data="generate")],
-    ]
-    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+    await callback_query.message.edit_text(text, reply_markup=keyboard)
 
-    text = (
-        f"Режим: {mode.capitalize()}\n"
-        f"Нота: {NOTES[0]}\n"
-        f"Лад: {SCALES[0]}\n"
-        f"Шаги: {STEPS[0]}"
-    )
-
-    await callback_query.message.answer(text, reply_markup=keyboard)
-
-#дальше идет обработчки кнопки нота и далее обработчик кнопки лад и далее еще steps(с edit.text обязательно)
-
-@dp.callback_query(lambda c: c.data =="toggle_note")
+    
+@dp.callback_query(lambda c:c.data == "toggle_note")
 async def toggle_note(callback_query: CallbackQuery):
     await callback_query.answer()
 
     user_id = callback_query.from_user.id
+    if user_id  not in user_state:
+        await callback_query.answer("Сначала /start", show_alert = True)
+        return
+
     state = user_state[user_id]
-
-    state["note_idx"] = (state["note_idx"] + 1) % len(NOTES)
-
-    text = (
-        f"Режим: {state["mode"].capitalize()}\n"
-        f"Нота: {NOTES[state["note_idx"]]}\n"
-        f"Лад: {SCALES[state["scale_idx"]]}\n"
-        f"Шаги: {STEPS[state["steps_idx"]]}"
-    )
-    buttons = [
-        [InlineKeyboardButton(text=f"Нота: {NOTES[state["note_idx"]]}",callback_data="toggle_note"),
-        InlineKeyboardButton(text=f"Лад: {SCALES[state["scale_idx"]]}", callback_data="toggle_scale"),
-        InlineKeyboardButton(text=f"Шаги: {STEPS[state["steps_idx"]]}", callback_data="toggle_steps")],
-        [InlineKeyboardButton(text="🎲Сгенерировать паттерн",callback_data="generate")]
-    ]
-    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+    state["note_idx"]= (state["note_idx"] + 1) % len(NOTES)
+    text, keyboard = main_screen(state)
     
+    logging.info(f"Пользователь {user_id} выбрал ноту {note}")
+
     await callback_query.message.edit_text(text, reply_markup=keyboard)
 
-@dp.callback_query(lambda c: c.data == "toggle_scale")
+@dp.callback_query(lambda c:c.data == "toggle_scale")
 async def toggle_scale(callback_query: CallbackQuery):
     await callback_query.answer()
 
     user_id = callback_query.from_user.id
+    if user_id  not in user_state:
+        await callback_query.answer("Сначала /start", show_alert = True)
+        return
+
     state = user_state[user_id]
-
-    state["scale_idx"] = (state["scale_idx"] + 1) % len(SCALES)
-
-    text = (
-        f"Режим: {state["mode"].capitalize()}\n"
-        f"Нота: {NOTES[state["note_idx"]]}\n"
-        f"Лад: {SCALES[state["scale_idx"]]}\n"
-        f"Шаги: {STEPS[state["steps_idx"]]}"
-    )
-
-    buttons = [
-        [InlineKeyboardButton(text=f"Нота: {NOTES[state["note_idx"]]}",callback_data="toggle_note"),
-        InlineKeyboardButton(text=f"Лад: {SCALES[state["scale_idx"]]}", callback_data="toggle_scale"),
-        InlineKeyboardButton(text=f"Шаги: {STEPS[state["steps_idx"]]}", callback_data="toggle_steps")],
-        [InlineKeyboardButton(text="🎲Сгенерировать паттерн",callback_data="generate")]
-    ]
-    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+    state["scale_idx"]= (state["scale_idx"] + 1) % len(SCALES)
+    text, keyboard = main_screen(state)
     
+    logging.info(f"Пользователь {user_id} выбрал лад {scale}")
+
     await callback_query.message.edit_text(text, reply_markup=keyboard)
 
-@dp.callback_query(lambda c: c.data == "toggle_steps")
+@dp.callback_query(lambda c:c.data == "toggle_steps")
 async def toggle_steps(callback_query: CallbackQuery):
     await callback_query.answer()
 
     user_id = callback_query.from_user.id
+    if user_id  not in user_state:
+        await callback_query.answer("Сначала /start", show_alert = True)
+        return
+
     state = user_state[user_id]
-
-    state["steps_idx"] = (state["steps_idx"] + 1) % len(STEPS)
-
-    text = (
-        f"Режим: {state["mode"].capitalize()}\n"
-        f"Нота: {NOTES[state["note_idx"]]}\n"
-        f"Лад: {SCALES[state["scale_idx"]]}\n"
-        f"Шаги: {STEPS[state["steps_idx"]]}"
-    )
-
-    buttons = [
-        [InlineKeyboardButton(text=f"Нота: {NOTES[state["note_idx"]]}",callback_data="toggle_note"),
-        InlineKeyboardButton(text=f"Лад: {SCALES[state["scale_idx"]]}", callback_data="toggle_scale"),
-        InlineKeyboardButton(text=f"Шаги: {STEPS[state["steps_idx"]]}", callback_data="toggle_steps")],
-        [InlineKeyboardButton(text="🎲Сгенерировать паттерн",callback_data="generate")]
-    ]
-    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+    state["steps_idx"]= (state["steps_idx"] + 1) % len(STEPS)
+    text, keyboard = main_screen(state)
     
+    logging.info(f"Пользователь {user_id} выбрал кол-во шагов {steps}")
+
     await callback_query.message.edit_text(text, reply_markup=keyboard)
 
 #далее идет обработчик генерации 
@@ -209,7 +183,8 @@ async def process_generate(callback_query: CallbackQuery):
     
     try:
         state = user_state[user_id]
-        mode = state["mode"]
+        mode = MODES[state["mode_idx"]]
+        genre = GENRES[state["genre_idx"]]
 
         steps = STEPS[state["steps_idx"]]
         scale = SCALES[state["scale_idx"]]
@@ -238,7 +213,7 @@ async def process_generate(callback_query: CallbackQuery):
         else:
             notes, count = generate_lead(config)
             note_color = "#00aaff"
-        title = "BASS PATTERN" if mode == "bass" else "LEAD PATTERN"
+        title = f"{genre.upper()} {mode.upper()} PATTERN"
         image_buffer = generate_visual(notes, title, steps, note_color=note_color)
         await callback_query.message.answer_photo(
         photo=BufferedInputFile(image_buffer.getvalue(), filename="pattern.png"),
