@@ -24,10 +24,29 @@ SCALES = {
     "atonal":None
 }
 
-SCALE_PROBS = {}
-MAX_DIST = {}
-DENSITY = {}
-INTERVAL_PROBS = {} 
+SCALE_PROBS = {
+    "detroit_bass":{"major": 0.075,"minor": 0.375,"dor": 0.225,"frig": 0.325},
+    "detroit_lead":{"major": 0.075,"minor": 0.325,"dor": 0.375,"frig": 0.225},
+    "industrial_bass":{"major": 0.025,"minor": 0.375,"dor": 0.125,"frig": 0.475},
+    "industrial_lead":{"major": 0.025,"minor": 0.225,"dor": 0.125,"frig": 0.350,"atonal": 0.275}
+}
+
+MAX_DIST = {
+    "detroit_bass": 7,
+    "detroit_lead": 10,
+    "industrial_bass": 9,
+    "industrial_lead": 9
+}
+
+DENSITY = {
+    "detroit_bass": [0.90, 0.35, 0.65, 0.40, 0.55, 0.30, 0.65, 0.45, 0.80, 0.35, 0.65, 0.40, 0.55, 0.30, 0.70, 0.35],
+    "detroit_lead": [0.75, 0.20, 0.40, 0.25, 0.50, 0.30, 0.45, 0.35, 0.65, 0.25, 0.45, 0.30, 0.55, 0.20, 0.50, 0.25],
+    "industrial_bass": [0.70, 0.55, 0.65, 0.50, 0.60, 0.45, 0.65, 0.55, 0.75, 0.55, 0.65, 0.50, 0.65, 0.45, 0.70, 0.50],
+    "industrial_lead": [0.50, 0.15, 0.25, 0.15, 0.35, 0.20, 0.30, 0.20, 0.45, 0.10, 0.20, 0.15, 0.35, 0.10, 0.25, 0.15]
+}
+INTERVAL_PROBS = {
+    
+} 
 UP_PROBS = {}
 
 def weighted_choice()
