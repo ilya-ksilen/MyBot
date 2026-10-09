@@ -94,8 +94,23 @@ UP_PROBS = {
     "industrial_lead": {"strong": 0.50, "weak": 0.50, "even": 0.50}
 }
 
-def weighted_choice()
-def step_bucket()
+def weighted_choice(weights):
+    items = list(weight.items())
+    total = sum(p for _, prob in items)
+    r = random.random() * total
+    acc = 0.0
+    for value, prob in items:
+        acc += prob
+        if acc >= r:
+            return value
+    return items [-1][0]    
+
+
+def step_bucket():
+    for st in range(step):
+        if st in (1, 5, 9, 13)
+
+
 def snap_to_scale()
 
 def start_note(scale):
