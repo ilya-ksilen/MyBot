@@ -11,8 +11,8 @@
 # НО если вся дистанция паттерна уже становится длинне, чем допустимо, то точно разворачивается направление.
 
 #ВЫДЕРЖКА:
-Логика генерации на основе цепей Маркова
-Цепь: Лад - плотность - интервал - направление - снэп на ноту в ладу - проверка ограничений
+# Логика генерации на основе цепей Маркова
+# Цепь: Лад - плотность - интервал - направление - снэп на ноту в ладу - проверка ограничений
 
 import random
 
@@ -86,7 +86,9 @@ INTERVAL_PROBS = {
         (6,  0.05, 0.05, 0.05),
         (7,  0.075,0.05, 0.05),
         (12, 0.15, 0.15, 0.15),
-} 
+    ]
+}
+
 UP_PROBS = {
     "detroit_bass": {"strong": 0.40, "weak": 0.55, "even": 0.50},
     "detroit_lead": {"strong": 0.50, "weak": 0.55, "even": 0.50},
@@ -106,18 +108,42 @@ def weighted_choice(weights):
     return items [-1][0]    
 
 
-def step_bucket():
-    for st in range(step):
-        if st in (1, 5, 9, 13)
+def step_bucket(step):
+    if step in (1, 5, 9, 13):
+        return "strong"
+    elif step in (3, 7, 11, 15):
+        return "weak"
+    else:
+        return "even"
 
 
-def snap_to_scale()
+def snap_to_scale(note,scale):
+    if scale is None:
+        return note
+    octave = note //12
+    pitch = note % 12
+    candidates = []
+    for n in scale:
+        candidates.append(n)
+        candidates.append(n+12)
+        candidates.append(n-12)
+    best_candidate = min(candidates, key=lambda c: (abs(c-pitch),c))
+    return octave * 12 + best 
 
 def start_note(scale):
     start = weighted_choice({0:0.80, 2:0.15, 4:0.05}) #вероятности тоники первой нотой
     return scale[start]
 
-def select_interval()
+# def select_interval()
 
-def generate_bar()
-def generate_markov()
+# def generate_bar()
+# def generate_markov()
+
+
+if __name__ == "__main__":
+    print(step_bucket(1))
+    print(step_bucket(2))
+    print(step_bucket(3))
+    print(step_bucket(5))
+    print(step_bucket(15))
+    print(step_bucket(16))
