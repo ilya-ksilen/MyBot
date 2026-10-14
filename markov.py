@@ -97,8 +97,11 @@ UP_PROBS = {
 }
 
 def weighted_choice(weights):
-    items = list(weight.items())
-    total = sum(p for _, prob in items)
+    if isinstance(weights, dict):
+        items = list(weights.items())
+    else:
+        items = list(weights)
+    total = sum(prob for _, prob in items)
     r = random.random() * total
     acc = 0.0
     for value, prob in items:
@@ -127,23 +130,49 @@ def snap_to_scale(note,scale):
         candidates.append(n)
         candidates.append(n+12)
         candidates.append(n-12)
-    best_candidate = min(candidates, key=lambda c: (abs(c-pitch),c))
+    best = min(candidates, key=lambda c: (abs(c - pitch),c))
     return octave * 12 + best 
 
 def start_note(scale):
     start = weighted_choice({0:0.80, 2:0.15, 4:0.05}) #вероятности тоники первой нотой
     return scale[start]
 
-# def select_interval()
+def select_interval(intervals, bucket):
+    bucket_idx = {"strong": 0, "weak": 1, "even": 2}[bucket]
+    weights = [(iv, probs[bucket_idx]) for iv, *probs in intervals]
+    return weighted_choice(weights)
 
 # def generate_bar()
 # def generate_markov()
 
 
 if __name__ == "__main__":
-    print(step_bucket(1))
-    print(step_bucket(2))
-    print(step_bucket(3))
-    print(step_bucket(5))
-    print(step_bucket(15))
-    print(step_bucket(16))
+    # print(step_bucket(1))
+    # print(step_bucket(2))
+    # print(step_bucket(3))
+    # print(step_bucket(5))
+    # print(step_bucket(15))
+    # print(step_bucket(16))
+    # minor = [0,2,3,5,7,8,10]
+    # print(snap_to_scale(15, minor))
+    # print(snap_to_scale(6, minor))
+    # print(snap_to_scale(24, minor))
+    # print(snap_to_scale(4, None))
+    detroit = [
+        (0,  0.30, 0.15, 0.20), 
+        (1,  0.075,0.20, 0.175),
+        (2,  0.075,0.20, 0.175),
+        (3,  0.10, 0.125,0.125),
+        (4,  0.10, 0.125,0.125),
+        (5,  0.10, 0.05, 0.05),
+        (7,  0.10, 0.05, 0.05),
+        (12, 0.15, 0.10, 0.10),
+    ]
+    for _ in range(100):
+        print(select_interval(detroit, "strong"))
+    for _ in range(100):
+        print(select_interval(detroit, "weak"))
+    for _ in range(100):
+        print(select_interval(detroit, "even"))
+
+
