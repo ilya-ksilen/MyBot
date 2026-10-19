@@ -142,37 +142,98 @@ def select_interval(intervals, bucket):
     weights = [(iv, probs[bucket_idx]) for iv, *probs in intervals]
     return weighted_choice(weights)
 
-# def generate_bar()
-# def generate_markov()
+def generate_bar(subgenre, scale, max_dist, buffer_note):
+    density = DENSITY[subgenre]
+    intervals = INTERVAL_PROBS[subgenre]
+    upper = UP_PROBS[subgenre]
+    pattern = []
+    for step in range(1,17):
+        if random.random() > density[step-1]:
+            pattern.append(None)
+            continue
 
+        bucket = step_bucket(step)
+        interval = select_interval(intervals, bucket)
+        direction = 1 if random.random() < upper[bucket] else -1
+
+        candidate = buffer_note + interval * direction
+        candidate = snap_to_scale(candidate, scale)
+
+        if max_dist is not None and abs(candidate) > max_dist:
+            candidate = buffer_note - interval * direction
+            candidate = snap_to_scale(candidate, scale)
+            if abs(candidate) > max_dist:
+                candidate = buffer_note
+
+        pattern.append(candidate)
+        buffer_note = candidate
+
+    return pattern, buffer_note
+
+
+
+def generate_markov(subgenre, root_note, bars, seed):
+    if seed is not None:
+        random.seed(seed)
+    mode = weighted_choice(SCALE_PROBS[subgenre])
+    scale = SCALES[mode]
+
+    max_dist = MAX_DIST[subgenre] if mode != "atonal" else None
+
+    buffer_note = start_note(scale)
+
+    full_pattern = []
+    for _ in range(bars):
+        bar_pattern, buffer_note = generate_bar(subgenre, scale, max_dist, buffer_note)
+        full_pattern.extend(bar_pattern)
+
+    abs_pattern = [
+        (root_note + n) if n is not None else None
+        for n in full_pattern
+        ]
+    count = sum(1 for n in abs_pattern if n is not None)
+    return abs_pattern, count
+    
 
 if __name__ == "__main__":
-    # print(step_bucket(1))
-    # print(step_bucket(2))
-    # print(step_bucket(3))
-    # print(step_bucket(5))
-    # print(step_bucket(15))
-    # print(step_bucket(16))
-    # minor = [0,2,3,5,7,8,10]
-    # print(snap_to_scale(15, minor))
-    # print(snap_to_scale(6, minor))
-    # print(snap_to_scale(24, minor))
-    # print(snap_to_scale(4, None))
-    detroit = [
-        (0,  0.30, 0.15, 0.20), 
-        (1,  0.075,0.20, 0.175),
-        (2,  0.075,0.20, 0.175),
-        (3,  0.10, 0.125,0.125),
-        (4,  0.10, 0.125,0.125),
-        (5,  0.10, 0.05, 0.05),
-        (7,  0.10, 0.05, 0.05),
-        (12, 0.15, 0.10, 0.10),
-    ]
-    for _ in range(100):
-        print(select_interval(detroit, "strong"))
-    for _ in range(100):
-        print(select_interval(detroit, "weak"))
-    for _ in range(100):
-        print(select_interval(detroit, "even"))
+    notes, count = generate_markov("detroit_bass", 36, bars=1, seed=42)
+    print(notes)
+    print(f"Всего нот: {count}")
+
+    # minor=[0,2,3,5,7,8,10]
+    # bar, last_note = generate_bar("detroit_bass",minor,7,0)
+    # print(bar)
+    # print(f"Последняя нота: {last_note}")
+    
+
+
+# if __name__ == "__main__":
+#     # print(step_bucket(1))
+#     # print(step_bucket(2))
+#     # print(step_bucket(3))
+#     # print(step_bucket(5))
+#     # print(step_bucket(15))
+#     # print(step_bucket(16))
+#     # minor = [0,2,3,5,7,8,10]
+#     # print(snap_to_scale(15, minor))
+#     # print(snap_to_scale(6, minor))
+#     # print(snap_to_scale(24, minor))
+#     # print(snap_to_scale(4, None))
+#     detroit = [
+#         (0,  0.30, 0.15, 0.20), 
+#         (1,  0.075,0.20, 0.175),
+#         (2,  0.075,0.20, 0.175),
+#         (3,  0.10, 0.125,0.125),
+#         (4,  0.10, 0.125,0.125),
+#         (5,  0.10, 0.05, 0.05),
+#         (7,  0.10, 0.05, 0.05),
+#         (12, 0.15, 0.10, 0.10),
+#     ]
+#     for _ in range(100):
+#         print(select_interval(detroit, "strong"))
+#     for _ in range(100):
+#         print(select_interval(detroit, "weak"))
+#     for _ in range(100):
+#         print(select_interval(detroit, "even"))
 
 
