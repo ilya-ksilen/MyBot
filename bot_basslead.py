@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import os
 from main_basslead import generate_bass, generate_lead, PATTERN_BASS, PATTERN_LEAD, generate_visual, midi_to_name, SCALES, NOTES, STEPS, GENRES, MODES, GENRE_EMOJI,MODES_EMOJI
 import random
+from markov import generate_markov
 
 logging.basicConfig(level=logging.DEBUG,
 format="%(asctime)s - %(levelname)s - %(message)s")
@@ -196,15 +197,12 @@ async def process_generate(callback_query: CallbackQuery):
 
         if mode == "bass":
             root_note = 36 + note_idx
-            mask_name = random.choice(PATTERN_BASS)
         else:
             root_note = 60 + note_idx
-            mask_name = random.choice(PATTERN_LEAD)
 
         config = {
             "root_note":root_note,
             "scale":scale,
-            "mask":mask_name,
             "steps":steps,
             "oct_shift":0
         }
@@ -212,16 +210,18 @@ async def process_generate(callback_query: CallbackQuery):
         logging.info(f"Генерация в режиме {mode} для пользователя {user_id}, config {config}")
 
         if mode == "bass":
-            notes, count = generate_bass(config)
+            subgenre = f"{genre}_bass"
             note_color = "#ff8800"
         else:
-            notes, count = generate_lead(config)
+            subgenre = f"{genre}_lead"
             note_color = "#00aaff"
+        
         title = f"{genre.upper()} {mode.upper()} PATTERN"
+        notes, count = generate_markov(subgenre, root_note, bars=steps//16,)
         image_buffer = generate_visual(notes, title, steps, note_color=note_color)
         await callback_query.message.answer_photo(
         photo=BufferedInputFile(image_buffer.getvalue(), filename="pattern.png"),
-        caption=f"{mode.capitalize()}: {NOTES[note_idx]} {SCALES[state['scale_idx']]} | маска: {mask_name}"
+        caption=f"{mode.capitalize()}: {NOTES[note_idx]} {SCALES[state['scale_idx']]}"
         )
     
     except Exception:
