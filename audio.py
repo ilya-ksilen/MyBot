@@ -18,7 +18,8 @@ def notes_to_wav(notes, bpm=130):
             note_samples=[]
             for i in range(dot):
                 t = i / 44100
-                value = 0.3 * math.sin(2 * math.pi * freq * t)
+                envelope = 1.0 - (i / dot)
+                value = 0.3 * envelope * math.sin(2 * math.pi * freq * t)
                 sample = int(value * 32767)
                 note_samples.append(sample)
             all_samples.extend(note_samples)
