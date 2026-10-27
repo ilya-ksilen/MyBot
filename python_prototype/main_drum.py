@@ -235,4 +235,5 @@ def visualize_loop_image(loop, style):
     img.save(buffer, format="PNG")
     buffer.seek(0)
     return buffer
+    
 
