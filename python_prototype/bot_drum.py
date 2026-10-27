@@ -13,10 +13,10 @@ from dotenv import load_dotenv
 import os
 from main_drum import generate_random_loop, visualize_loop_image
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s- %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s- %(levelname)s - %(message)s')
 
 load_dotenv()
-TOKEN = os.getenv("TOKEN")
+TOKEN = os.getenv("DRUM_BOT_TOKEN")
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -62,7 +62,7 @@ async def process_generate(callback_query: CallbackQuery):
 
     try:
         loop = generate_random_loop(style, steps=16)
-        image_buffer = visualize_loop_image(loop)
+        image_buffer = visualize_loop_image(loop, style)
 
         await callback_query.message.answer_photo(
             photo=BufferedInputFile(image_buffer.getvalue(), filename="pattern.png"),

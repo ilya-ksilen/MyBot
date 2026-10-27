@@ -1,0 +1,4 @@
+.env
+markov.py
+__pycache__
+venv/

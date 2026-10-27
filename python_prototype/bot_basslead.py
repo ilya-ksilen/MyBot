@@ -9,7 +9,7 @@ import os
 from main_basslead import generate_bass, generate_lead, PATTERN_BASS, PATTERN_LEAD, generate_visual, midi_to_name, SCALES, NOTES, STEPS, GENRES, MODES, GENRE_EMOJI,MODES_EMOJI
 import random
 from markov import generate_markov
-from audio import notes_to_wav
+from audio_wav import notes_to_wav
 
 logging.basicConfig(level=logging.DEBUG,
 format="%(asctime)s - %(levelname)s - %(message)s")
@@ -224,9 +224,9 @@ async def process_generate(callback_query: CallbackQuery):
         photo=BufferedInputFile(image_buffer.getvalue(), filename="pattern.png"),
         caption=f"{mode.capitalize()}: {NOTES[note_idx]} {SCALES[state['scale_idx']]}"
         )
-        audio_data = notes_to_wav(notes, bpm=130)
+        audio_bytes = notes_to_wav(notes, bpm=130) 
         await callback_query.message.answer_audio(
-            audio = BufferedInputFile(audio_data, filename="pattern.wav")
+            audio = BufferedInputFile(audio_bytes, filename="pattern.wav"),
             caption = f"Прослушать превью: {title}"
         )
     

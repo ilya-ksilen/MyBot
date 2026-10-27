@@ -107,7 +107,7 @@ STYLES = {
 
 CELL_COLORS = {
     "detroit": "#ff8800",
-    "industrial": "red"
+    "industrial": "#ff0000"
 }
 #функция выбора инструментов, согласно вероятностям
 def select_instruments(style):
